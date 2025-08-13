@@ -71,12 +71,6 @@ uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_fo
     --robot.port=/dev/ttyUSB0 --motion=motion_20250813_194018.json
 ```
 
-#### 利用可能なモーションファイル一覧表示
-
-```bash
-uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_follower \
-    --robot.port=/dev/ttyUSB0 --list
-```
 
 #### 再生速度調整
 
@@ -99,11 +93,13 @@ uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_fo
 
 ### オプション
 
-- `--motion`: 再生するモーションファイル名
+- `--motion`: 再生するモーションファイル名（必須）
 - `--motion-dir`: モーションファイルのディレクトリ（デフォルト: ./motions）
-- `--list`: 利用可能なモーションファイル一覧表示
-- `--speed`: 再生速度倍率（デフォルト: 1.0）
+- `--speed`: 再生速度倍率（デフォルト: 0.5、安全のため半分の速度）
 - `--verbose`: 詳細なデバッグ情報を表示
+- `--go-to-home`: 開始時にホームポジションに移動（デフォルト: true）
+- `--return-to-home`: モーション終了後にホームポジションに戻る（デフォルト: true）
+- `--use-optimized-pid`: 最適化PID設定を使用（デフォルト: true）
 
 ### 対応ロボット
 

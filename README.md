@@ -1,114 +1,154 @@
-# Python-Boilerplate-LLM
+# LeRobot Tools
 
-このリポジトリはAIコーディングツール（Cline/Cursor等）を活用したPythonプロジェクト開発のためのボイラープレートです。LLMが設計書を自動生成し、それに基づいて実装を行うワークフローを前提としています。
+このリポジトリはLeRobotを使用したロボット制御ツール集です。
 
 ## 機能
 
-- LLMによる設計書自動生成と実装の一貫したワークフロー
-- 設計書テンプレート（docs/design.md.sample）をベースにLLMが要件に合わせた設計書を作成
+- Motion Editor: キーボード操作によるポイントtoポイントモーション作成・編集ツール
 - uvを使用した仮想環境管理
-- src/とtests/ディレクトリによる構造化
-- メインプログラムのエントリーポイント
-- pytestを使用したテスト例
+- ruffによるコード品質管理
 
-## 使い方
+## セットアップ
 
-### 開発環境のセットアップ
-
-#### 方法1: ローカル環境
-
-1. uvによる仮想環境の作成とパッケージのインストール:
+### 1. uvによる環境構築
 
 ```bash
-uv venv
+uv sync
 ```
 
-2. 開発用パッケージのインストール:
+これにより以下がインストールされます：
+- lerobot
+- lerobot[feetech] (Feetech Servo SDK含む)
+- ruff (開発依存関係)
+
+### 2. 仮想環境の有効化
 
 ```bash
-uv pip install -r requirements.txt
+source .venv/bin/activate
 ```
 
-#### 方法2: DevContainer
-
-VS Codeユーザーの場合、DevContainerを使用した開発環境が利用可能です：
-
-1. VS CodeでDevContainerを開く:
-   - `F1` → `Dev Containers: Reopen in Container`
-   - または通知からコンテナで再開を選択
-
-2. 自動的にDocker環境がセットアップされ、Pythonの開発環境が構築されます
-
-### メインプログラムの実行
+または
 
 ```bash
-python -m src.main
+uv run <command>
 ```
 
-### LLMを活用した開発ワークフロー
+## Motion Editor
 
-このボイラープレートは、AIコーディングツール（Cline/Cursor/Claude Code等）を活用した以下の開発ワークフローを前提としています：
+キーボード操作でポイントtoポイントモーションを作成・編集できるツールです。
 
-1. プロジェクトの要件をLLMに伝える
-2. LLMが`docs/design.md.sample`テンプレートをベースに、要件に合わせた`docs/design.md`を自動生成
-3. 生成された設計書に基づいて、LLMがコードを実装
-4. テストコードの作成と実行
-
-このワークフローにより、要件定義から実装までの一貫性が保たれ、効率的な開発が可能になります。
-
-#### LLMへの指示例
-
-```
-このリポジトリを使って、以下の要件のプロジェクトを実装してください。
-
-<プロジェクトの要件>
-
-docs/design.md.sample をベースに設計書を作成し、その設計に基づいて実装を行ってください。
-```
-
-## テスト
-
-テストの実行:
+### 使用方法
 
 ```bash
-pytest
+uv run python motion_editor.py --robot.type=so101_follower --robot.id=lerobot_follower --robot.port=/dev/ttyUSB0
 ```
 
-## 設計書テンプレート
+### キーボードコマンド
 
-`docs/design.md.sample`には、プロジェクトの要件定義から設計、開発工程までを体系的に記述するためのテンプレートが含まれています。このテンプレートは以下の特徴を持っています：
+- **WASD**: 各軸の移動 (W/S: shoulder_pan, A/D: shoulder_lift)
+- **IJKL**: その他の軸 (I/K: elbow_flex, J/L: wrist_flex)
+- **Q/E**: wrist_roll
+- **Z/X**: gripper
+- **M**: 現在位置をポイントとして記録
+- **P**: 記録されたモーションを再生
+- **S**: モーションをファイルに保存
+- **L**: モーションをファイルから読み込み
+- **R**: モーションをリセット（2回押しで確定）
+- **ESC**: 終了
 
-- 要件定義セクション（基本情報、プロジェクト概要、機能要件、非機能要件など）
-- システム設計セクション（アーキテクチャ、クラス設計、データフロー、エラーハンドリングなど）
-- 開発工程セクション（フェーズ、マイルストーン、リスク管理など）
+## Motion Player
 
-LLMはこのテンプレートを参照し、ユーザーから提供された要件に基づいて具体的な設計書を自動生成します。ユーザーは生成された設計書を確認し、必要に応じて調整を依頼できます。
+保存されたモーションファイルを再生する独立したツールです。
+
+### 使用方法
+
+#### 基本的な再生
+
+```bash
+uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_follower \
+    --robot.port=/dev/ttyUSB0 --motion=motion_20250813_194018.json
+```
+
+#### 利用可能なモーションファイル一覧表示
+
+```bash
+uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_follower \
+    --robot.port=/dev/ttyUSB0 --list
+```
+
+#### 再生速度調整
+
+```bash
+# 2倍速で再生
+uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_follower \
+    --robot.port=/dev/ttyUSB0 --motion=motion.json --speed=2.0
+
+# 半分の速度で再生
+uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_follower \
+    --robot.port=/dev/ttyUSB0 --motion=motion.json --speed=0.5
+```
+
+#### デバッグモード
+
+```bash
+uv run python motion_player.py --robot.type=so101_follower --robot.id=lerobot_follower \
+    --robot.port=/dev/ttyUSB0 --motion=motion.json --verbose
+```
+
+### オプション
+
+- `--motion`: 再生するモーションファイル名
+- `--motion-dir`: モーションファイルのディレクトリ（デフォルト: ./motions）
+- `--list`: 利用可能なモーションファイル一覧表示
+- `--speed`: 再生速度倍率（デフォルト: 1.0）
+- `--verbose`: 詳細なデバッグ情報を表示
+
+### 対応ロボット
+
+- so101_follower
+
+### 他のプロジェクトでの活用
+
+Motion PlayerとMotion Utilsは独立したモジュールとして設計されており、他のプロジェクトでサンプルコードとして参考にできます：
+
+- `motion_utils.py`: モーションデータ構造とファイルI/O
+- `motion_player.py`: モーション再生ロジック
+- `motions/`: JSONフォーマットのモーションデータ
+
+## 開発
+
+### コード品質チェック
+
+```bash
+# Lintチェック
+uv run ruff check
+
+# 自動修正
+uv run ruff check --fix
+
+# フォーマット
+uv run ruff format
+```
+
+### 設定
+
+ruffの設定は`pyproject.toml`で管理されています：
+- line-length: 127
+- 基本的なlintルール (E, F, W, I) を有効化
 
 ## プロジェクト構造
 
 ```
 .
-├── docs/               # ドキュメント
-│   └── design.md.sample  # 設計書テンプレート（LLMが参照）
-├── src/                # ソースコード
-│   ├── __init__.py
-│   └── main.py         # メインエントリーポイント
-├── tests/              # テストコード
-│   ├── conftest.py
-│   └── test_main.py    # メインモジュールのテスト
-├── .devcontainer/      # DevContainer設定ファイル
-│   ├── devcontainer.json
-│   ├── docker-compose.yml
-│   └── Dockerfile
-├── .claude/            # Claude Code設定
-│   └── settings.local.json
-├── rules.md            # コーディングルール
-├── .gitignore          # Git無視ファイル設定
-├── LICENSE             # ライセンスファイル
-├── README.md           # このファイル
-└── requirements.txt    # 依存関係
+├── motion_editor.py     # Motion Editorメインファイル
+├── motion_player.py     # Motion Playerメインファイル
+├── motion_utils.py      # Motion関連共通ユーティリティ
+├── motions/             # 保存されたモーションファイル
+├── pyproject.toml       # uv/ruff設定
+├── .venv/              # 仮想環境 (uv syncで自動作成)
+└── README.md           # このファイル
 ```
 
 ## ライセンス
 
-このプロジェクトは[MITライセンス](LICENSE)の下で公開されています。詳細については[LICENSE](LICENSE)ファイルを参照してください。
+このプロジェクトはMITライセンスの下で公開されています。

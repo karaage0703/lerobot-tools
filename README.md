@@ -1,6 +1,8 @@
 # LeRobot Tools
 
-このリポジトリはLeRobotを使用したロボット制御ツール集です。
+このリポジトリは[LeRobot](https://github.com/huggingface/lerobot)を使用したロボット制御ツール集です。
+
+> **Note**: このプロジェクトは[Hugging Face LeRobot](https://github.com/huggingface/lerobot)プロジェクトを基盤としています。LeRobotは Apache-2.0 ライセンスの下で公開されています。
 
 ## 機能
 
@@ -151,4 +153,11 @@ ruffの設定は`pyproject.toml`で管理されています：
 
 ## ライセンス
 
-このプロジェクトはMITライセンスの下で公開されています。
+このプロジェクト自体はMITライセンスの下で公開されています。
+
+### 使用しているプロジェクト
+
+- [LeRobot](https://github.com/huggingface/lerobot): Apache-2.0 ライセンス
+- 本プロジェクトで作成したコード: MIT ライセンス
+
+LeRobotライブラリを使用する場合は、Apache-2.0ライセンスの条項に従ってください。
